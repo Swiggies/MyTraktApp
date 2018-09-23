@@ -27,8 +27,8 @@ import java.util.regex.Pattern;
 public class MainActivity extends AppCompatActivity {
 
     public final String API_URL = "https://api.trakt.tv/";
-    public final static String CLIENT_ID = "5cdd2e9c480ee1c879e551fd87359119d58cb17c6721b3780dc27ce5372790f7";
-    public final static String CLIENT_SECRET = "6484d929dbaec2741b7a5ec275e0594a35ae07488b8ff2f6a2194098f78dc40c";
+    public final static String CLIENT_ID = "";
+    public final static String CLIENT_SECRET = "";
     public final static String REDIRECT_URI = "oauth://redirect";
     public static SharedPreferences preferences;
 
