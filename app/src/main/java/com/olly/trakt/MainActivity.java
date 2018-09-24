@@ -1,12 +1,13 @@
 package com.olly.trakt;
 
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
@@ -15,28 +16,30 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.olly.trakt.Objects.ServerCallback;
+import com.olly.trakt.Objects.TraktObject;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-
 public class MainActivity extends AppCompatActivity {
 
     public final String API_URL = "https://api.trakt.tv/";
-    public final static String CLIENT_ID = "";
-    public final static String CLIENT_SECRET = "";
+    public final static String CLIENT_ID = "5cdd2e9c480ee1c879e551fd87359119d58cb17c6721b3780dc27ce5372790f7";
+    public final static String CLIENT_SECRET = "6484d929dbaec2741b7a5ec275e0594a35ae07488b8ff2f6a2194098f78dc40c";
     public final static String REDIRECT_URI = "oauth://redirect";
     public static SharedPreferences preferences;
 
-    private TextView testTextView;
     private WebView webView;
-    private Button signInButton;
-    private JSONObject response;
 
+    ArrayList<TraktObject> traktList = new ArrayList<>();
+    private RecyclerView mRecyclerView;
+    private TraktListAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +48,13 @@ public class MainActivity extends AppCompatActivity {
 
         preferences = getApplicationContext().getSharedPreferences("com.olly.trakt", Context.MODE_PRIVATE);
         webView = findViewById(R.id.SignInWebView);
+
+        mRecyclerView = findViewById(R.id.RecyclerViewMain);
+        mAdapter = new TraktListAdapter(traktList);
+
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+        mRecyclerView.setLayoutManager(layoutManager);
+        mRecyclerView.setAdapter(mAdapter);
 
         if(!preferences.contains("access_token")) {
             webView.loadUrl(API_URL + "oauth/authorize?response_type=code&client_id=" + CLIENT_ID + "&redirect_uri=oauth://redirect");
@@ -82,15 +92,27 @@ public class MainActivity extends AppCompatActivity {
 
         Log.d("CHECKING KEY", preferences.getString("access_token", null));
 
+        webView.setVisibility(View.GONE);
+
         Map<String, String> params = new HashMap<String, String>();
         params.put("Content-Type", "application/json");
         params.put("Authorization", "Bearer " + preferences.getString("access_token", null));
         params.put("trakt-api-version", "2");
         params.put("trakt-api-key", CLIENT_ID);
-        TraktManager.getInstance(getApplicationContext()).getString(API_URL + "calendars/my/shows", params, new ServerCallback() {
+        TraktManager.getInstance(getApplicationContext()).getString(API_URL + "calendars/all/shows", params, new ServerCallback() {
             @Override
             public void onSuccess(String result) {
-                    Log.d("Result", result);
+                Log.d("Result", result);
+                try {
+                    JSONArray traktJson = new JSONArray(result);
+                    for (int i = 0; i < traktJson.length(); i++) {
+                        TraktObject traktObj = new TraktObject(traktJson.getJSONObject(i).getJSONObject("show").getString("title"));
+                        traktList.add(traktObj);
+                    }
+                    mAdapter.notifyDataSetChanged();
+                }catch (JSONException e){
+                    Log.e("JSON_EXCEPTION", e.getLocalizedMessage());
+                }
             }
         });
     }

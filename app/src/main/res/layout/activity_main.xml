@@ -7,10 +7,18 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <WebView
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/RecyclerViewMain"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/SignInWebView">
+        android:layout_weight="1" />
+
+    <WebView
+        android:id="@+id/SignInWebView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+
     </WebView>
 
 </LinearLayout>
