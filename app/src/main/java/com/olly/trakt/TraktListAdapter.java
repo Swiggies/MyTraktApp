@@ -7,22 +7,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.olly.trakt.Objects.TraktObject;
+import com.olly.trakt.Objects.TraktListObject;
 
 import java.util.ArrayList;
 
 public class TraktListAdapter extends RecyclerView.Adapter<TraktListAdapter.ViewHolder> {
 
-    private ArrayList<TraktObject> traktList;
+    private ArrayList<TraktListObject> traktList;
 
-    public TraktListAdapter(ArrayList<TraktObject> traktObjects){
-        traktList = traktObjects;
+    public TraktListAdapter(ArrayList<TraktListObject> traktListObjects){
+        traktList = traktListObjects;
     }
 
     @Override
     public void onBindViewHolder(@NonNull TraktListAdapter.ViewHolder holder, int position) {
-        TraktObject trakt = traktList.get(position);
-        holder.txtTitle.setText(trakt.getTitle());
+        TraktListObject trakt = traktList.get(position);
+        holder.txtTitle.setText(trakt.episode.title);
 
     }
 
