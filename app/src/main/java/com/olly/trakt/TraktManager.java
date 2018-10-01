@@ -2,6 +2,7 @@ package com.olly.trakt;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.android.volley.AuthFailureError;
@@ -58,22 +59,22 @@ public class TraktManager {
     }
 
     public void getString(String urlString, Map<String, String> headerParams, final ServerCallback callback){
-        JsonArrayRequest getRequest = new JsonArrayRequest(Request.Method.GET, urlString, null,
-                new Response.Listener<JSONArray>()
+        StringRequest getRequest = new StringRequest(Request.Method.GET, urlString,
+                new Response.Listener<String>()
                 {
                     @Override
-                    public void onResponse(JSONArray response) {
+                    public void onResponse(String response) {
                         // display response
                         //mResponseObject = response;
-                        callback.onSuccess(response.toString());
-                        Log.d("Response", response.toString());
+                        callback.onSuccess(response);
+                        Log.d("Response", response);
                     }
                 },
                 new Response.ErrorListener()
                 {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.d("Error.Response", error.getMessage());
+                        Log.d("Error.Response", error.toString());
                     }
                 }) {
             @Override

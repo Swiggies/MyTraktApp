@@ -37,6 +37,8 @@ public class MainActivity extends AppCompatActivity {
     public final static String CLIENT_SECRET = "6484d929dbaec2741b7a5ec275e0594a35ae07488b8ff2f6a2194098f78dc40c";
     // The redirect URI is where the Trakt API will redirect to. Since this is a native app this is an arbitrary address
     public final static String REDIRECT_URI = "oauth://redirect";
+
+    public final static String TMDB_KEY = "e5b0f61beeccd1f8940012f58a5928b2";
     // This is where basic settings such as the client code (given when authenticated by Trakt) will be stored
     public static SharedPreferences preferences;
 
@@ -139,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
         params.put("trakt-api-version", "2");
         params.put("trakt-api-key", CLIENT_ID);
         // Send and waits for a response from Trakt
-        TraktManager.getInstance(getApplicationContext()).getString(API_URL + "calendars/all/shows", params, new ServerCallback() {
+        TraktManager.getInstance(getApplicationContext()).getString(API_URL + "calendars/my/shows", params, new ServerCallback() {
             @Override
             public void onSuccess(String result) {
                 Log.d("Result", result);
