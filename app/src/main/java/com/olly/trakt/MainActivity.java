@@ -3,15 +3,23 @@ package com.olly.trakt;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.text.style.TtsSpan;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -22,9 +30,17 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+
+import okhttp3.MediaType;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -40,10 +56,14 @@ public class MainActivity extends AppCompatActivity {
 
     public final static String TMDB_KEY = "e5b0f61beeccd1f8940012f58a5928b2";
     // This is where basic settings such as the client code (given when authenticated by Trakt) will be stored
-    public static SharedPreferences preferences;
+    private SharedPreferences preferences;
 
     //The WebView that displays the authentication process
     private WebView webView;
+
+    private TraktManager traktManager;
+
+    private Spinner showSpinner;
 
     // RecycleView stuff here
     // traktList is the list of Trakt Objects displayed in the RecyclerView
@@ -58,11 +78,30 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(myToolbar);
+
+        traktManager = TraktManager.getInstance(getApplicationContext());
+        preferences = traktManager.preferences;
 
         // get the shared preferences for this app
-        preferences = getApplicationContext().getSharedPreferences("com.olly.trakt", Context.MODE_PRIVATE);
+        //preferences = getApplicationContext().getSharedPreferences("com.olly.trakt", Context.MODE_PRIVATE);
         // find the webview
         webView = findViewById(R.id.SignInWebView);
+
+        showSpinner = findViewById(R.id.main_spinner);
+
+        showSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                getMyShows(Integer.valueOf(showSpinner.getItemAtPosition(i).toString()));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
         // find the recycler view and store the reference
         mRecyclerView = findViewById(R.id.RecyclerViewMain);
@@ -77,8 +116,10 @@ public class MainActivity extends AppCompatActivity {
         // Set the adapter for the recyclerview
         mRecyclerView.setAdapter(mAdapter);
 
+
+
         // if the access token is not found in the preferences
-        if(!preferences.contains("access_token")) {
+        if(!traktManager.preferences.contains("access_token")) {
             // the webview will load the authentication page
             webView.loadUrl(API_URL + "oauth/authorize?response_type=code&client_id=" + CLIENT_ID + "&redirect_uri=oauth://redirect");
 
@@ -108,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
                         params.put("grant_type", "authorization_code");
                         // This is custom designed method to send a POST request to a server.
                         // Using an Interface called "ServerCallback" I implemented a way for the POST to say when it has finished its job
-                        int statusCode = TraktManager.getInstance(getApplicationContext()).postString(API_URL + "oauth/token", params, new ServerCallback() {
+                        int statusCode = traktManager.postString(API_URL + "oauth/token", traktManager.CONTENT_TYPE, new Gson().toJson(params), new ServerCallback() {
                             @Override
                             // When the POST request has finished
                             public void onSuccess(String result) {
@@ -134,26 +175,27 @@ public class MainActivity extends AppCompatActivity {
         // If the above finished successfully then hide WebView
         webView.setVisibility(View.GONE);
 
-        // Set up a GET request to get the users upcoming/current shows
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("Content-Type", "application/json");
-        params.put("Authorization", "Bearer " + preferences.getString("access_token", null));
-        params.put("trakt-api-version", "2");
-        params.put("trakt-api-key", CLIENT_ID);
+        getMyShows(7);
+    }
+
+    private void getMyShows(int days){
+        if(!traktList.isEmpty())
+            traktList.clear();
+
+        getSupportActionBar().setTitle("My Shows");
         // Send and waits for a response from Trakt
-        TraktManager.getInstance(getApplicationContext()).getString(API_URL + "calendars/my/shows", params, new ServerCallback() {
+        String date = new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(new Date());
+        String url = MessageFormat.format("{0}calendars/my/shows/{1}/{2}", API_URL, date, days);
+        TraktManager.getInstance(getApplicationContext()).getString(url, traktManager.TRAKT_PARAMS, new ServerCallback() {
             @Override
             public void onSuccess(String result) {
                 Log.d("Result", result);
                 try {
                     // Conver the string from the reply and convert it to a JSON array
                     JSONArray traktJson = new JSONArray(result);
-                    GsonBuilder builder = new GsonBuilder();
-                    Gson gson = builder.create();
                     // Iterate through the array and create objects and add them to the RecyclerView array
                     for (int i = 0; i < traktJson.length(); i++) {
-                        //TraktListObject traktObj = new TraktListObject(traktJson.getJSONObject(i).getJSONObject("show").getString("title"));
-                        TraktListObject traktObj = gson.fromJson(traktJson.getJSONObject(i).toString(), TraktListObject.class);
+                        TraktListObject traktObj = new Gson().fromJson(traktJson.getJSONObject(i).toString(), TraktListObject.class);
                         traktList.add(traktObj);
                     }
                     // notify the adapter that the dataset changed
@@ -163,5 +205,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        traktManager.getWatchlist();
     }
 }

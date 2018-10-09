@@ -8,7 +8,7 @@ public class TraktListObject {
 
     public Date first_aired;
     public TraktListEpisode episode;
-    public TraktListShow show;
+    public TraktShow show;
 
     public class TraktListEpisode {
         public int season;
@@ -16,20 +16,5 @@ public class TraktListObject {
         public String title;
         public TraktID ids;
     }
-
-    public class TraktListShow {
-        public String title;
-        public int year;
-        public TraktID ids;
-    }
-
-    public class TraktID {
-        public int trakt;
-        public String slug;
-        public int tvdb;
-        public String imdb;
-        public int tmdb;
-    }
-
 
 }

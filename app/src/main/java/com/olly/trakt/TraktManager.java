@@ -1,6 +1,7 @@
 package com.olly.trakt;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -16,16 +17,22 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
 import com.olly.trakt.Objects.JsonParser;
 import com.olly.trakt.Objects.ServerCallback;
+import com.olly.trakt.Objects.TraktExtendedObject;
+import com.olly.trakt.Objects.WatchlistObject;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.olly.trakt.MainActivity.CLIENT_ID;
 
 public class TraktManager {
 
@@ -35,9 +42,23 @@ public class TraktManager {
     private JSONObject mResponseObject;
     private int mStatusCode = 0;
 
+    public Map<String, String> TRAKT_PARAMS = new HashMap<>();
+    public Map<String, String> CONTENT_TYPE = new HashMap<>();
+
+    public  Map<String, WatchlistObject> watchlist = new HashMap<>();
+
+    public SharedPreferences preferences;
+
     private TraktManager (Context context){
         mCtx = context;
         mQueue = getRequestQueue();
+
+        preferences = mCtx.getSharedPreferences("com.olly.trakt", Context.MODE_PRIVATE);
+        TRAKT_PARAMS.put("Content-type", "application/json");
+        TRAKT_PARAMS.put("Authorization", "Bearer " + preferences.getString("access_token",null));
+        TRAKT_PARAMS.put("trakt-api-version", "2");
+        TRAKT_PARAMS.put("trakt-api-key", MainActivity.CLIENT_ID);
+        Log.d("Holy shit am i an idiot", MainActivity.CLIENT_ID);
     }
 
     public static synchronized TraktManager getInstance(Context context) {
@@ -85,7 +106,7 @@ public class TraktManager {
         mQueue.add(getRequest);
     }
 
-    public int postString(String urlString, Map<String, String> headerParams, final ServerCallback callback){
+    public int postString(String urlString, Map<String, String> headerParams, String body, final ServerCallback callback){
         try {
             JsonObjectRequest postRequest = new JsonObjectRequest(Request.Method.POST, urlString, new JSONObject(headerParams),
                     new Response.Listener<JSONObject>() {
@@ -101,12 +122,18 @@ public class TraktManager {
                         @Override
                         public void onErrorResponse(VolleyError error) {
                             // error
-                            Log.d("Error.Response", error.getMessage());
+                            Log.d("Error.Response", String.valueOf(error.networkResponse.statusCode) + error.networkResponse.headers.toString());
                         }
                     }) {
+
                 @Override
-                protected Map<String, String> getParams() {
+                public Map<String, String> getHeaders() throws AuthFailureError {
                     return headerParams;
+                }
+
+                @Override
+                public byte[] getBody() {
+                    return body.getBytes();
                 }
 
                 @Override
@@ -122,6 +149,25 @@ public class TraktManager {
             Log.d("EXCEPTION", e.getMessage());
             return 0;
         }
+    }
+
+    public void getWatchlist(){
+        getString(MainActivity.API_URL + "sync/watched/shows?extended=noseasons", TRAKT_PARAMS, new ServerCallback() {
+            @Override
+            public void onSuccess(String result) {
+                try {
+                    JSONArray traktJson = new JSONArray(result);
+                    for (int i = 0; i < traktJson.length(); i++) {
+                        WatchlistObject watchlistObject = new Gson().fromJson(traktJson.getJSONObject(i).toString(), WatchlistObject.class);
+                        watchlist.put(watchlistObject.show.ids.slug, watchlistObject);
+                        Log.d("WATCH", watchlist.toString());
+                    }
+                }
+                catch (JSONException e){
+                    Log.d("JSON",e.getLocalizedMessage());
+                }
+            }
+        });
     }
 }
 

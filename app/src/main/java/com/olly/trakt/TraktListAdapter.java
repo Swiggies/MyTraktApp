@@ -29,11 +29,8 @@ import java.util.Map;
 public class TraktListAdapter extends RecyclerView.Adapter<TraktListAdapter.ViewHolder> {
 
     private ArrayList<TraktListObject> traktList;
-    private TraktListObject trakt;
-    private TMDBObject tmdb;
+    private ArrayList<TMDBObject> tmdbList = new ArrayList<>();
     private Context parentContext;
-    private String showName;
-    public View view;
 
     public TraktListAdapter(ArrayList<TraktListObject> traktListObjects){
         traktList = traktListObjects;
@@ -41,8 +38,9 @@ public class TraktListAdapter extends RecyclerView.Adapter<TraktListAdapter.View
 
     @Override
     public void onBindViewHolder(@NonNull TraktListAdapter.ViewHolder holder, int position) {
-        trakt = traktList.get(position);
-         Log.d("TRAKT", MessageFormat.format("Show: {0} ID: {1}",trakt.show.title,String.valueOf(trakt.show.ids.tmdb)));
+        TraktListObject trakt = traktList.get(position);
+        TMDBObject tmdb = new TMDBObject();
+        Log.d("TRAKT", MessageFormat.format("Show: {0} ID: {1}",trakt.show.title,String.valueOf(trakt.show.ids.tmdb)));
 
         holder.txtShowTitle.setText(trakt.show.title);
         holder.txtEpisodeTitle.setText(trakt.episode.title);
@@ -55,9 +53,13 @@ public class TraktListAdapter extends RecyclerView.Adapter<TraktListAdapter.View
             TraktManager.getInstance(parentContext).getString(url, params, new ServerCallback() {
                 @Override
                 public void onSuccess(String result) {
-                    tmdb = new Gson().fromJson(result, TMDBObject.class);
-                    Picasso.get().load("https://image.tmdb.org/t/p/w500" + tmdb.poster_path).into(holder.imgPoster);
-                    holder.imgPoster.setVisibility(View.VISIBLE);
+                    try {
+                        tmdbList.add(new Gson().fromJson(result, TMDBObject.class));
+                        Picasso.get().load("https://image.tmdb.org/t/p/w500" + tmdbList.get(position).poster_path).into(holder.imgPoster);
+                        holder.imgPoster.setVisibility(View.VISIBLE);
+                    }catch (IndexOutOfBoundsException e){
+                        Log.d("OUT OF BOUNDS", e.getLocalizedMessage());
+                    }
                 }
             });
         } else if (trakt.show.ids.tmdb == 0) {
@@ -65,6 +67,18 @@ public class TraktListAdapter extends RecyclerView.Adapter<TraktListAdapter.View
             holder.imgPoster.setVisibility(View.VISIBLE);
             holder.progressBar.setVisibility(View.GONE);
         }
+
+        holder.cardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(parentContext, ShowInfoActivity.class);
+                intent.putExtra("showName", trakt.show.title);
+                intent.putExtra("showSlug", trakt.show.ids.slug);
+                if(tmdbList.get(position) != null)
+                    intent.putExtra("backdrop_path", tmdbList.get(position).backdrop_path);
+                parentContext.startActivity(intent);
+            }
+        });
 
     }
 
@@ -95,24 +109,12 @@ public class TraktListAdapter extends RecyclerView.Adapter<TraktListAdapter.View
 
         public ViewHolder(View itemView){
             super(itemView);
-            view = itemView;
             txtShowTitle = itemView.findViewById(R.id.cardShowTitle);
             txtEpisodeTitle = itemView.findViewById(R.id.cardEpisodeTitle);
             imgPoster = itemView.findViewById(R.id.imageView);
             progressBar = itemView.findViewById(R.id.progressBar);
             txtAirTime = itemView.findViewById(R.id.cardEpisodeAirDate);
             cardView = itemView.findViewById(R.id.card_view);
-
-            cardView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(parentContext, ShowInfoActivity.class);
-                    intent.putExtra("showName", trakt.show.title);
-                    intent.putExtra("showSlug", trakt.show.ids.slug);
-                    intent.putExtra("backdrop_path", tmdb.backdrop_path);
-                    parentContext.startActivity(intent);
-                }
-            });
         }
     }
 }

@@ -31,6 +31,12 @@
                                       </entry>
                                     </map>
                                   </option>
+                                  <option name="values">
+                                    <map>
+                                      <entry key="assetType" value="IMAGE" />
+                                      <entry key="imageAsset" value="G:\Pictures\IMDB_icon.png" />
+                                    </map>
+                                  </option>
                                 </PersistentState>
                               </value>
                             </entry>
@@ -61,15 +67,26 @@
                                           </PersistentState>
                                         </value>
                                       </entry>
+                                      <entry key="foregroundImage">
+                                        <value>
+                                          <PersistentState>
+                                            <option name="values">
+                                              <map>
+                                                <entry key="scalingPercent" value="67" />
+                                              </map>
+                                            </option>
+                                          </PersistentState>
+                                        </value>
+                                      </entry>
                                     </map>
                                   </option>
                                   <option name="values">
                                     <map>
                                       <entry key="backgroundAssetType" value="COLOR" />
-                                      <entry key="backgroundLayerName" value="bg" />
-                                      <entry key="foregroundAssetType" value="CLIP_ART" />
-                                      <entry key="foregroundLayerName" value="foreground_star" />
-                                      <entry key="outputName" value="star" />
+                                      <entry key="backgroundLayerName" value="imdb_bg" />
+                                      <entry key="foregroundImage" value="G:\Pictures\IMDB_icon.png" />
+                                      <entry key="foregroundLayerName" value="imdb_fg" />
+                                      <entry key="outputName" value="imdb_icon" />
                                     </map>
                                   </option>
                                 </PersistentState>
