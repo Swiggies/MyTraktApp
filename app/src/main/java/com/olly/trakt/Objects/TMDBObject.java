@@ -1,6 +1,9 @@
 package com.olly.trakt.Objects;
 
-import java.util.List;
+
+import android.util.Log;
+
+import java.util.Map;
 
 public class TMDBObject {
 

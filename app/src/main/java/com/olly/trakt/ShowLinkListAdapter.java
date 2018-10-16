@@ -1,11 +1,15 @@
 package com.olly.trakt;
 
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.olly.trakt.Objects.LinkListObject;
@@ -16,9 +20,11 @@ import java.util.ArrayList;
 public class ShowLinkListAdapter extends RecyclerView.Adapter<ShowLinkListAdapter.ViewHolder> {
 
     private ArrayList<LinkListObject> mLinkListObjects;
+    private Context mCtx;
 
-    public ShowLinkListAdapter(ArrayList<LinkListObject> linkListObjects){
+    public ShowLinkListAdapter(Context ctx, ArrayList<LinkListObject> linkListObjects){
         mLinkListObjects = linkListObjects;
+        mCtx = ctx;
     }
 
     @NonNull
@@ -34,6 +40,15 @@ public class ShowLinkListAdapter extends RecyclerView.Adapter<ShowLinkListAdapte
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         LinkListObject listObject = mLinkListObjects.get(position);
 
+        holder.linkLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Uri uri = Uri.parse(mLinkListObjects.get(position).listURL);
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                mCtx.startActivity(intent);
+            }
+        });
+
         holder.linkListImg.setBackgroundResource(listObject.listImg);
         holder.linkListTitle.setText(listObject.listTitle);
     }
@@ -46,10 +61,12 @@ public class ShowLinkListAdapter extends RecyclerView.Adapter<ShowLinkListAdapte
     class ViewHolder extends RecyclerView.ViewHolder {
         public TextView linkListTitle;
         public ImageView linkListImg;
+        public RelativeLayout linkLayout;
 
         public ViewHolder(View itemView) {
             super(itemView);
 
+            linkLayout = itemView.findViewById(R.id.linkLayout);
             linkListTitle = itemView.findViewById(R.id.listTitle);
             linkListImg = itemView.findViewById(R.id.listImg);
         }

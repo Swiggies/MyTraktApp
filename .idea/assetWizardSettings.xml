@@ -78,15 +78,39 @@
                                           </PersistentState>
                                         </value>
                                       </entry>
+                                      <entry key="foregroundText">
+                                        <value>
+                                          <PersistentState>
+                                            <option name="values">
+                                              <map>
+                                                <entry key="color" value="ffffff" />
+                                                <entry key="scalingPercent" value="98" />
+                                              </map>
+                                            </option>
+                                          </PersistentState>
+                                        </value>
+                                      </entry>
+                                      <entry key="foregroundTextAsset">
+                                        <value>
+                                          <PersistentState>
+                                            <option name="values">
+                                              <map>
+                                                <entry key="text" value="+" />
+                                              </map>
+                                            </option>
+                                          </PersistentState>
+                                        </value>
+                                      </entry>
                                     </map>
                                   </option>
                                   <option name="values">
                                     <map>
                                       <entry key="backgroundAssetType" value="COLOR" />
-                                      <entry key="backgroundLayerName" value="imdb_bg" />
+                                      <entry key="backgroundLayerName" value="plug_bg" />
+                                      <entry key="foregroundAssetType" value="TEXT" />
                                       <entry key="foregroundImage" value="G:\Pictures\IMDB_icon.png" />
-                                      <entry key="foregroundLayerName" value="imdb_fg" />
-                                      <entry key="outputName" value="imdb_icon" />
+                                      <entry key="foregroundLayerName" value="plus_fg" />
+                                      <entry key="outputName" value="plus" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -117,7 +141,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="jar:file:/E:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/toggle/ic_star_black_24dp.xml" />
+                                      <entry key="url" value="jar:file:/E:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/content/ic_add_black_24dp.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -127,8 +151,8 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="color" value="ffff00" />
-                            <entry key="outputName" value="ic_star_black_24dp" />
+                            <entry key="color" value="ffffff" />
+                            <entry key="outputName" value="ic_add" />
                             <entry key="sourceFile" value="C:\Users\lolly" />
                           </map>
                         </option>

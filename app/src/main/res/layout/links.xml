@@ -5,7 +5,8 @@
     android:layout_height="wrap_content"
     android:clickable="true"
     android:focusable="true"
-    android:foreground="?selectableItemBackground">
+    android:foreground="?selectableItemBackground"
+    android:id="@+id/linkLayout">
 
     <ImageView
         android:id="@+id/listImg"
@@ -25,7 +26,6 @@
         android:layout_centerVertical="true"/>
 
     <View
-        android:id="@+id/divider3"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="?android:attr/listDivider"

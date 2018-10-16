@@ -51,7 +51,7 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical">
 
@@ -72,7 +72,24 @@
                         android:layout_gravity="center"
                         android:gravity="center_horizontal"
                         android:text="EpisodeTitle"
-                        android:textAlignment="center"/>
+                        android:textAlignment="center" />
+
+                    <TextView
+                        android:id="@+id/cardEpisodeNumber"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center_horizontal"
+                        android:text="EpisodeTitle"
+                        android:textAlignment="center" />
+
+                    <TextView
+                        android:id="@+id/cardEpisodeAirDate"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center_horizontal"
+                        android:text="Air Date / Air Time" />
 
                 </LinearLayout>
 
@@ -85,17 +102,17 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0"
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/cardEpisodeAirDate"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:gravity="center_horizontal"
-                        android:text="Air Date / Air Time" />
+                        android:id="@+id/cardShowCount"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="Loading..."
+                        android:gravity="center"/>
                 </LinearLayout>
             </LinearLayout>
             </RelativeLayout>

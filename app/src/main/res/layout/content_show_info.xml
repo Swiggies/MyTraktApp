@@ -28,10 +28,15 @@
             android:background="?android:attr/listDivider" />
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/showList"
+            android:id="@+id/showLinks"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             tools:listitem="@layout/links" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/showSeasons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
 

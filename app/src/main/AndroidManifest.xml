@@ -22,6 +22,8 @@
             android:name=".ShowInfoActivity"
             android:label="@string/title_activity_show_info"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".SearchActivity" />
+        <activity android:name=".BrowserActivity"></activity>
     </application>
 
 </manifest>
